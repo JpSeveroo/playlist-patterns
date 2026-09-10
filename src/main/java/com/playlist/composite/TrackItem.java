@@ -9,6 +9,7 @@ import com.playlist.core.Track;
  */
 public class TrackItem implements MediaItem {
   private final Track track;
+
   /**
    * Cria a folha a partir de uma faixa.
    *
@@ -16,7 +17,7 @@ public class TrackItem implements MediaItem {
    * @throws IllegalArgumentException se {@code track} for nula.
    */
   public TrackItem(Track track) {
-    if (track == null){
+    if (track == null) {
       throw new IllegalArgumentException("A faixa não pode ser nula");
     }
     this.track = track;

@@ -4,6 +4,7 @@
 target
 # Log file
 *.log
+.vscode
 
 # BlueJ files
 *.ctxt

@@ -1,6 +1,5 @@
 package com.playlist.composite;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ public class PlaylistNode implements MediaItem {
 
   private List<MediaItem> itens = new ArrayList<>();
   private final String name;
+
   /**
    * Cria uma playlist vazia.
    *
@@ -21,9 +21,9 @@ public class PlaylistNode implements MediaItem {
    */
   public PlaylistNode(String name) {
     if (name == null || name.isBlank()) {
-        throw new IllegalArgumentException("Nome vazio");
+      throw new IllegalArgumentException("Nome vazio");
     }
-      this.name = name;
+    this.name = name;
   }
 
   /**
@@ -31,15 +31,16 @@ public class PlaylistNode implements MediaItem {
    *
    * @param item item a ser adicionado.
    * @return a própria playlist, permitindo encadear chamadas.
-   * @throws IllegalArgumentException se o item for nulo, for a própria playlist ou contiver a própria playlist (o que criaria um ciclo).
+   * @throws IllegalArgumentException se o item for nulo, for a própria playlist ou
+   *     contiver a própria playlist (o que criaria um ciclo).
    */
   public PlaylistNode add(MediaItem item) {
-  
-    if (item == null || item == this){
+
+    if (item == null || item == this) {
       throw new IllegalArgumentException("Erro");
     }
-    if (item instanceof PlaylistNode subPlaylist){
-      if (subPlaylist.contains(this)){
+    if (item instanceof PlaylistNode subPlaylist) {
+      if (subPlaylist.contains(this)) {
         throw new IllegalArgumentException("Erro");
       }
     }
@@ -73,12 +74,12 @@ public class PlaylistNode implements MediaItem {
    * @return {@code true} se o item for filho direto ou descendente.
    */
   public boolean contains(MediaItem item) {
-    for (MediaItem i : itens){
-      if (i.equals(item)){
+    for (MediaItem i : itens) {
+      if (i.equals(item)) {
         return true;
       }
-      if (i instanceof PlaylistNode subPlaylist){
-        if (subPlaylist.contains(item)){
+      if (i instanceof PlaylistNode subPlaylist) {
+        if (subPlaylist.contains(item)) {
           return true;
         }
       }
@@ -88,13 +89,13 @@ public class PlaylistNode implements MediaItem {
 
   @Override
   public String getName() {
-      return this.name;
+    return this.name;
   }
 
   @Override
   public int getDurationSeconds() {
     int total = 0;
-    for (MediaItem i : itens){
+    for (MediaItem i : itens) {
       total += i.getDurationSeconds();
     }
     return total;
@@ -103,7 +104,7 @@ public class PlaylistNode implements MediaItem {
   @Override
   public int getTrackCount() {
     int total = 0;
-    for (MediaItem i : itens){
+    for (MediaItem i : itens) {
       total += i.getTrackCount();
     }
     return total;
@@ -111,12 +112,12 @@ public class PlaylistNode implements MediaItem {
 
   @Override
   public List<Track> flatten() {
-      List<Track> lista = new ArrayList<>();
+    List<Track> lista = new ArrayList<>();
 
-      for (MediaItem i : itens) {
-          lista.addAll(i.flatten());
-      }
+    for (MediaItem i : itens) {
+      lista.addAll(i.flatten());
+    }
 
-      return lista;
+    return lista;
   }
 }

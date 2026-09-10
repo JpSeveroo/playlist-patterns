@@ -1,8 +1,9 @@
 package com.playlist.adapter;
 
-import com.playlist.core.Track;
 import java.util.List;
 import java.util.Optional;
+
+import com.playlist.core.Track;
 
 /**
  * Alvo (Target) do padrão Adapter: a interface de catálogo que Playlist usa internamente.
