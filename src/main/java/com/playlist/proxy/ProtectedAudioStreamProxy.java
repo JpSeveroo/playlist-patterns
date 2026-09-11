@@ -1,19 +1,25 @@
 package com.playlist.proxy;
 
+import java.util.function.Supplier;
+
 import com.playlist.core.AccessDeniedException;
 import com.playlist.core.Subscription;
 import com.playlist.core.Track;
-import java.util.function.Supplier;
 
 /**
  * Proxy que controla o acesso ao {@link RemoteAudioStream}.
  *
- * Ele acumula três responsabilidades clássicas do padrão: proteção
+ * <p>Ele acumula três responsabilidades clássicas do padrão: proteção
  * (bloqueia faixas premium para o plano gratuito), lazy loading (só cria o
  * objeto real quando o áudio é realmente pedido) e cache (não baixa o mesmo
  * áudio duas vezes).
  */
 public class ProtectedAudioStreamProxy implements AudioStream {
+  private final Track track;
+  private final Subscription plan;
+  private final Supplier<AudioStream> loader;
+  private AudioStream audioStream;
+  private byte[] cachedBytes = null;
 
   /**
    * Cria o proxy com uma fábrica explícita do objeto real.
@@ -25,8 +31,12 @@ public class ProtectedAudioStreamProxy implements AudioStream {
    * @throws IllegalArgumentException se qualquer argumento for nulo.
    */
   public ProtectedAudioStreamProxy(Track track, Subscription plan, Supplier<AudioStream> loader) {
-    throw new UnsupportedOperationException(
-            "Exercício 3: implemente o construtor de ProtectedAudioStreamProxy");
+    if (track == null || plan == null || loader == null) {
+      throw new IllegalArgumentException("Parametro nulo");
+    }
+    this.track = track;
+    this.plan = plan;
+    this.loader = loader;
   }
 
   /**
@@ -36,8 +46,7 @@ public class ProtectedAudioStreamProxy implements AudioStream {
    * @param plan plano de assinatura de quem está ouvindo.
    */
   public ProtectedAudioStreamProxy(Track track, Subscription plan) {
-    throw new UnsupportedOperationException(
-            "Exercício 3: implemente o construtor de conveniência de ProtectedAudioStreamProxy");
+    this(track, plan, () -> new RemoteAudioStream(track));
   }
 
   /**
@@ -46,14 +55,12 @@ public class ProtectedAudioStreamProxy implements AudioStream {
    * @return {@code true} apenas depois que o stream real tiver sido carregado.
    */
   public boolean isLoaded() {
-    throw new UnsupportedOperationException(
-            "Exercício 3: implemente ProtectedAudioStreamProxy.isLoaded");
+    return this.audioStream != null;
   }
 
   @Override
   public String getTrackId() {
-    throw new UnsupportedOperationException(
-            "Exercício 3: implemente ProtectedAudioStreamProxy.getTrackId");
+    return track.id();
   }
 
   /**
@@ -65,8 +72,15 @@ public class ProtectedAudioStreamProxy implements AudioStream {
    */
   @Override
   public byte[] readBytes() {
-    throw new UnsupportedOperationException(
-            "Exercício 3: implemente ProtectedAudioStreamProxy.readBytes");
+    if (this.track.premium() && this.plan == Subscription.FREE) {
+      throw new AccessDeniedException("Pode não mano");
+    }
+    if (this.audioStream == null) {
+      this.audioStream = this.loader.get();
+    }
+    if (this.cachedBytes == null) {
+      this.cachedBytes = this.audioStream.readBytes();
+    }
+    return this.cachedBytes.clone();
   }
 }
-
